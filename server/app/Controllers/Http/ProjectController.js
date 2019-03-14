@@ -28,6 +28,15 @@ async destroy({ auth, request, params }) {
     await project.delete();
     return project;
 }
+async update({ auth, request, params }) {
+    const user = await auth.getUser();
+    const { id } = params;
+    const project = await Project.find(id);
+    AuthorizationService.verifyPermission(project, user);
+    project.merge(request.only('title'));
+    await project.save();
+    return project;
+}
 }
 
 module.exports = ProjectController
